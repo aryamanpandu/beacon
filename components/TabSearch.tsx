@@ -331,11 +331,13 @@ export default function TabSearch({ onClose }: TabSearchProps) {
                       title={tab.windowId === focusedWindowId ? "This window" : `Window ${windowNumbers.get(tab.windowId)}`}
                       style={{
                         fontSize: "10px",
-                        color: tab.windowId === focusedWindowId ? "#f5c842" : "#3a597a",
+                        // Current window recedes (its tabs are sorted last); other
+                        // windows read more clearly — that's where you're looking.
+                        color: tab.windowId === focusedWindowId ? "#2e4a66" : "#4e6a8a",
                         fontWeight: 500,
                         flexShrink: 0,
                         letterSpacing: "0.04em",
-                        opacity: tab.windowId === focusedWindowId ? 0.7 : 0.85,
+                        opacity: tab.windowId === focusedWindowId ? 0.6 : 0.9,
                         fontFamily: "monospace",
                       }}
                     >
