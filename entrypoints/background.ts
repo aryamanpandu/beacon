@@ -42,5 +42,28 @@ export default defineBackground(() => {
       browser.tabs.remove(message.tabId);
       return false;
     }
+
+    if (message.type === "GET_BOOKMARKS") {
+      // The browser already keeps bookmarks in memory
+      // no caching needed. Flatten the tree to the leaf nodes that have a URL.
+      browser.bookmarks.getTree().then((tree) => {
+        const bookmarks: { id: string; title: string; url: string }[] = [];
+        const stack = [...tree];
+        while (stack.length) {
+          const node = stack.pop()!;
+          if (node.url) {
+            bookmarks.push({ id: node.id, title: node.title || node.url, url: node.url });
+          }
+          if (node.children) stack.push(...node.children);
+        }
+        sendResponse({ bookmarks });
+      });
+      return true;
+    }
+
+    if (message.type === "OPEN_URL") {
+      browser.tabs.create({ url: message.url });
+      return false;
+    }
   });
 });
