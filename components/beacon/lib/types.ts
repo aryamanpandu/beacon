@@ -9,6 +9,12 @@ export interface Tab {
   active: boolean;
 }
 
+export interface Bookmark {
+  id: string;
+  title: string;
+  url: string;
+}
+
 export interface BeaconCommand {
   id: string;
   trigger: string; // e.g. "/book"
