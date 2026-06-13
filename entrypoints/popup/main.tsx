@@ -46,8 +46,13 @@ function Popup() {
     });
   }, []);
 
+  const isFirefox = import.meta.env.BROWSER === "firefox";
+
   const openShortcuts = () => {
-    browser.tabs.create({ url: "chrome://extensions/shortcuts" });
+    // Firefox has no deep link to its shortcut manager and blocks navigating to
+    // chrome:// pages — open about:addons (the closest entry point) instead.
+    const url = isFirefox ? "about:addons" : "chrome://extensions/shortcuts";
+    browser.tabs.create({ url }).catch(() => {});
     window.close();
   };
 
@@ -112,7 +117,9 @@ function Popup() {
         Customize shortcut
       </button>
       <div style={{ fontSize: "10.5px", color: "#2e4a66", marginTop: "9px", lineHeight: 1.5 }}>
-        Opens Chrome's shortcuts page, where you can change or clear Beacon's key combo.
+        {isFirefox
+          ? "Opens about:addons. Click the ⚙ gear → Manage Extension Shortcuts to change Beacon's keys."
+          : "Opens Chrome's shortcuts page, where you can change or clear Beacon's key combo."}
       </div>
     </div>
   );
