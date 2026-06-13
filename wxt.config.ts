@@ -8,7 +8,7 @@ export default defineConfig({
   }),
   manifest: {
     name: "Beacon",
-    description: "Keyboard-driven tab search for Chrome. Hit Cmd+Shift+O, type, switch.",
+    description: "Keyboard-driven tab search for Chrome. Hit Cmd+B, type, switch.",
     version: "1.0.0",
     permissions: ["tabs"],
     icons: {
@@ -20,8 +20,8 @@ export default defineConfig({
     commands: {
       "open-tab-search": {
         suggested_key: {
-          mac: "Command+Shift+O",
-          default: "Ctrl+Shift+O",
+          mac: "Command+B",
+          default: "Ctrl+B",
         },
         description: "Open Beacon tab search",
       },
