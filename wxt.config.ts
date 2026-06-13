@@ -7,8 +7,8 @@ export default defineConfig({
     plugins: [react()],
   }),
   manifest: {
-    name: "Tab Search",
-    description: "Quickly find and switch between open tabs with a keyboard shortcut",
+    name: "Beacon",
+    description: "Keyboard-driven tab search for Chrome. Hit Cmd+Shift+O, type, switch.",
     version: "1.0.0",
     permissions: ["tabs"],
     commands: {
@@ -17,7 +17,7 @@ export default defineConfig({
           mac: "Command+Shift+O",
           default: "Ctrl+Shift+O",
         },
-        description: "Open tab search overlay",
+        description: "Open Beacon tab search",
       },
     },
   },
