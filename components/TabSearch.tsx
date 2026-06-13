@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface Tab {
   id: number;
@@ -63,6 +63,14 @@ export default function TabSearch({ onClose }: TabSearchProps) {
   const [filtered, setFiltered] = useState<Tab[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [focusedWindowId, setFocusedWindowId] = useState<number | null>(null);
+
+  // Stable W1/W2/W3… labels keyed by windowId (sorted so numbering is consistent)
+  const windowNumbers = useMemo(() => {
+    const ids = [...new Set(tabs.map((t) => t.windowId))].sort((a, b) => a - b);
+    return new Map(ids.map((id, i) => [id, i + 1]));
+  }, [tabs]);
+  const multiWindow = windowNumbers.size > 1;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -87,10 +95,20 @@ export default function TabSearch({ onClose }: TabSearchProps) {
     // Set initial position via transform on first render
     applyTransform(posRef.current.x, posRef.current.y);
 
-    browser.runtime.sendMessage({ type: "GET_TABS" }).then((res: { tabs: Tab[] }) => {
-      setTabs(res.tabs);
-      setFiltered(res.tabs);
-    });
+    browser.runtime
+      .sendMessage({ type: "GET_TABS" })
+      .then((res: { tabs: Tab[]; focusedWindowId: number | null }) => {
+        // You're usually hunting for a tab you can't see — sink the focused
+        // window's tabs to the bottom so the rest surface first.
+        const sorted = [...res.tabs].sort((a, b) => {
+          const af = a.windowId === res.focusedWindowId ? 1 : 0;
+          const bf = b.windowId === res.focusedWindowId ? 1 : 0;
+          return af - bf;
+        });
+        setFocusedWindowId(res.focusedWindowId);
+        setTabs(sorted);
+        setFiltered(sorted);
+      });
     setTimeout(() => inputRef.current?.focus(), 30);
   }, []);
 
@@ -308,16 +326,20 @@ export default function TabSearch({ onClose }: TabSearchProps) {
                       {getDomain(tab.url)}
                     </div>
                   </div>
-                  {tab.active && (
-                    <span style={{
-                      fontSize: "10px",
-                      color: "#f5c842",
-                      fontWeight: 500,
-                      flexShrink: 0,
-                      letterSpacing: "0.04em",
-                      opacity: 0.75,
-                    }}>
-                      NOW
+                  {multiWindow && (
+                    <span
+                      title={tab.windowId === focusedWindowId ? "This window" : `Window ${windowNumbers.get(tab.windowId)}`}
+                      style={{
+                        fontSize: "10px",
+                        color: tab.windowId === focusedWindowId ? "#f5c842" : "#3a597a",
+                        fontWeight: 500,
+                        flexShrink: 0,
+                        letterSpacing: "0.04em",
+                        opacity: tab.windowId === focusedWindowId ? 0.7 : 0.85,
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      W{windowNumbers.get(tab.windowId)}
                     </span>
                   )}
                   <button
