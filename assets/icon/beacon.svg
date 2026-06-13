@@ -1,0 +1,48 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a1730"/>
+      <stop offset="1" stop-color="#030810"/>
+    </linearGradient>
+    <linearGradient id="tower" x1="64" y1="44" x2="64" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fbe08a"/>
+      <stop offset="1" stop-color="#e0a82e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+
+  <!-- Light beams -->
+  <g opacity="0.9">
+    <path d="M62 40 L10 24 L10 40 Z" fill="#f5c842" opacity="0.30"/>
+    <path d="M66 40 L118 24 L118 40 Z" fill="#f5c842" opacity="0.30"/>
+    <path d="M62 44 L14 52 L14 62 Z" fill="#f5c842" opacity="0.18"/>
+    <path d="M66 44 L114 52 L114 62 Z" fill="#f5c842" opacity="0.18"/>
+  </g>
+
+  <!-- Lantern glow -->
+  <circle cx="64" cy="40" r="16" fill="#f5c842" opacity="0.22"/>
+
+  <!-- Lighthouse tower -->
+  <path d="M55 60 L73 60 L78 104 L50 104 Z" fill="url(#tower)"/>
+
+  <!-- Tower bands -->
+  <path d="M56.5 72 L71.5 72 L72.4 80 L55.6 80 Z" fill="#7a2f12" opacity="0.55"/>
+  <path d="M54.5 90 L73.5 90 L74.4 98 L53.6 98 Z" fill="#7a2f12" opacity="0.55"/>
+
+  <!-- Gallery deck -->
+  <rect x="52" y="54" width="24" height="7" rx="2" fill="#fbe08a"/>
+
+  <!-- Lantern room -->
+  <rect x="57" y="42" width="14" height="13" rx="2" fill="#0a1730" stroke="#f5c842" stroke-width="2.5"/>
+  <!-- Light core -->
+  <circle cx="64" cy="48" r="3.2" fill="#fff4cf"/>
+
+  <!-- Roof -->
+  <path d="M55 42 L73 42 L64 32 Z" fill="#f5c842"/>
+  <circle cx="64" cy="30" r="2.4" fill="#fff4cf"/>
+
+  <!-- Base / rocks -->
+  <path d="M44 104 L84 104 L80 112 Q64 118 48 112 Z" fill="#0c1c38"/>
+</svg>
