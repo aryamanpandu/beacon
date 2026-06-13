@@ -13,8 +13,12 @@ export default defineBackground(() => {
   // Handle tab data + actions requested by the overlay
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.type === "GET_TABS") {
-      browser.tabs.query({}).then((tabs) => {
+      Promise.all([
+        browser.tabs.query({}),
+        browser.windows.getLastFocused(),
+      ]).then(([tabs, focusedWindow]) => {
         sendResponse({
+          focusedWindowId: focusedWindow.id,
           tabs: tabs.map((t) => ({
             id: t.id,
             title: t.title ?? "(no title)",
