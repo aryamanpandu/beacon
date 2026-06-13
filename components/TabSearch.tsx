@@ -13,43 +13,49 @@ interface TabSearchProps {
   onClose: () => void;
 }
 
-function getFavicon(tab: Tab): string | null {
-  if (tab.favIconUrl && !tab.favIconUrl.startsWith("chrome://")) {
-    return tab.favIconUrl;
-  }
-  return null;
-}
-
-function FaviconOrFallback({ tab }: { tab: Tab }) {
-  const [errored, setErrored] = useState(false);
-  const src = getFavicon(tab);
-
-  if (!src || errored) {
-    return (
-      <div className="w-4 h-4 rounded-sm bg-slate-600 flex items-center justify-center flex-shrink-0">
-        <svg className="w-2.5 h-2.5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14.4A6.4 6.4 0 1110 3.6a6.4 6.4 0 010 12.8z" />
-        </svg>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={src}
-      className="w-4 h-4 rounded-sm flex-shrink-0 object-contain"
-      onError={() => setErrored(true)}
-      alt=""
-    />
-  );
-}
-
 function getDomain(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
   } catch {
     return url;
   }
+}
+
+function FaviconOrFallback({ tab }: { tab: Tab }) {
+  const [errored, setErrored] = useState(false);
+  const src = tab.favIconUrl && !tab.favIconUrl.startsWith("chrome://") ? tab.favIconUrl : null;
+
+  if (!src || errored) {
+    return (
+      <div style={{ background: "rgba(245,200,66,0.12)", border: "1px solid rgba(245,200,66,0.18)" }}
+        className="w-[18px] h-[18px] rounded flex items-center justify-center flex-shrink-0">
+        <svg className="w-2.5 h-2.5" fill="none" stroke="#f5c842" strokeWidth={2} viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <img src={src} className="w-[18px] h-[18px] rounded flex-shrink-0 object-contain"
+      onError={() => setErrored(true)} alt="" />
+  );
+}
+
+// Lighthouse beam SVG used in the empty/header area
+function BeaconLogo() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L12 8" stroke="#f5c842" strokeWidth="2" strokeLinecap="round" />
+      <path d="M12 8L7 20H17L12 8Z" stroke="#f5c842" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M9 20H15" stroke="#f5c842" strokeWidth="2" strokeLinecap="round" />
+      <path d="M12 8L4 5" stroke="#f5c842" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+      <path d="M12 8L20 5" stroke="#f5c842" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+      <path d="M12 8L2 10" stroke="#f5c842" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
+      <path d="M12 8L22 10" stroke="#f5c842" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
+    </svg>
+  );
 }
 
 export default function TabSearch({ onClose }: TabSearchProps) {
@@ -60,33 +66,28 @@ export default function TabSearch({ onClose }: TabSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Fetch tabs on mount
   useEffect(() => {
     browser.runtime.sendMessage({ type: "GET_TABS" }).then((res: { tabs: Tab[] }) => {
       setTabs(res.tabs);
       setFiltered(res.tabs);
     });
-    inputRef.current?.focus();
+    // Small delay so shadow DOM is fully painted before focusing
+    setTimeout(() => inputRef.current?.focus(), 30);
   }, []);
 
-  // Filter tabs when query changes
   useEffect(() => {
     const q = query.trim().toLowerCase();
-    if (!q) {
-      setFiltered(tabs);
-    } else {
-      setFiltered(
-        tabs.filter(
+    const results = !q
+      ? tabs
+      : tabs.filter(
           (t) =>
             t.title.toLowerCase().includes(q) ||
             getDomain(t.url).toLowerCase().includes(q)
-        )
-      );
-    }
+        );
+    setFiltered(results);
     setSelectedIndex(0);
   }, [query, tabs]);
 
-  // Scroll selected item into view
   useEffect(() => {
     const item = listRef.current?.children[selectedIndex] as HTMLElement | undefined;
     item?.scrollIntoView({ block: "nearest" });
@@ -100,14 +101,11 @@ export default function TabSearch({ onClose }: TabSearchProps) {
     [onClose]
   );
 
-  const closeTab = useCallback(
-    (tab: Tab, e: React.MouseEvent) => {
-      e.stopPropagation();
-      browser.runtime.sendMessage({ type: "CLOSE_TAB", tabId: tab.id });
-      setTabs((prev) => prev.filter((t) => t.id !== tab.id));
-    },
-    []
-  );
+  const closeTab = useCallback((tab: Tab, e: React.MouseEvent) => {
+    e.stopPropagation();
+    browser.runtime.sendMessage({ type: "CLOSE_TAB", tabId: tab.id });
+    setTabs((prev) => prev.filter((t) => t.id !== tab.id));
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -135,31 +133,22 @@ export default function TabSearch({ onClose }: TabSearchProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[2147483647] flex items-start justify-center pt-[12vh] px-4"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.6)", backdropFilter: "blur(2px)" }}
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      className="fixed inset-0 flex items-start justify-center pt-[11vh] px-4"
+      style={{ backgroundColor: "rgba(1, 3, 9, 0.88)", backdropFilter: "blur(3px)", zIndex: 2147483647 }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="w-full max-w-xl rounded-xl overflow-hidden shadow-2xl"
-        style={{ backgroundColor: "#1e2533", border: "1px solid rgba(255,255,255,0.08)" }}
+        className="w-full max-w-xl overflow-hidden"
+        style={{
+          background: "linear-gradient(160deg, #060e1c 0%, #030810 100%)",
+          border: "1px solid rgba(245,200,66,0.18)",
+          borderRadius: "14px",
+          boxShadow: "0 0 0 1px rgba(245,200,66,0.06), 0 32px 64px rgba(1,3,9,0.85), 0 0 80px rgba(245,200,66,0.04)",
+        }}
       >
-        {/* Search input */}
-        <div className="flex items-center px-4 py-3 border-b border-white/10">
-          <svg
-            className="w-4 h-4 text-slate-400 mr-3 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-            />
-          </svg>
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(245,200,66,0.10)" }}>
+          <BeaconLogo />
           <input
             ref={inputRef}
             type="text"
@@ -167,11 +156,27 @@ export default function TabSearch({ onClose }: TabSearchProps) {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search tabs…"
-            className="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none"
+            style={{
+              flex: 1,
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              color: "#e2eaf4",
+              fontSize: "14px",
+              caretColor: "#f5c842",
+            }}
             autoComplete="off"
             spellCheck={false}
           />
-          <kbd className="text-xs text-slate-500 border border-slate-600 rounded px-1.5 py-0.5 ml-2">
+          <kbd style={{
+            fontSize: "11px",
+            color: "#4e6a8a",
+            border: "1px solid rgba(245,200,66,0.12)",
+            borderRadius: "5px",
+            padding: "2px 7px",
+            fontFamily: "monospace",
+            background: "rgba(245,200,66,0.04)",
+          }}>
             esc
           </kbd>
         </div>
@@ -179,60 +184,111 @@ export default function TabSearch({ onClose }: TabSearchProps) {
         {/* Results */}
         <ul
           ref={listRef}
-          className="overflow-y-auto max-h-[380px] py-1"
-          style={{ scrollbarWidth: "thin", scrollbarColor: "#3f4a5e transparent" }}
+          className="overflow-y-auto"
+          style={{
+            maxHeight: "380px",
+            padding: "4px 0",
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(245,200,66,0.15) transparent",
+          }}
         >
           {filtered.length === 0 && (
-            <li className="px-4 py-8 text-center text-slate-500 text-sm">No tabs found</li>
-          )}
-          {filtered.map((tab, i) => (
-            <li key={tab.id}>
-              <button
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors group ${
-                  i === selectedIndex
-                    ? "bg-slate-600/60"
-                    : "hover:bg-slate-700/40"
-                }`}
-                onMouseEnter={() => setSelectedIndex(i)}
-                onClick={() => switchToTab(tab)}
-              >
-                <FaviconOrFallback tab={tab} />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm text-slate-100 truncate leading-snug">
-                    {tab.title}
-                  </div>
-                  <div className="text-xs text-slate-500 truncate leading-snug mt-0.5">
-                    {getDomain(tab.url)}
-                  </div>
-                </div>
-                {tab.active && (
-                  <span className="text-xs text-emerald-400/80 font-medium flex-shrink-0 mr-1">
-                    current
-                  </span>
-                )}
-                <button
-                  className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-slate-500/50 text-slate-400 hover:text-slate-200 transition-all flex-shrink-0"
-                  onClick={(e) => closeTab(tab, e)}
-                  title="Close tab"
-                >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </button>
+            <li style={{ padding: "40px 16px", textAlign: "center", color: "#4e6a8a", fontSize: "13px" }}>
+              No tabs found
             </li>
-          ))}
+          )}
+          {filtered.map((tab, i) => {
+            const selected = i === selectedIndex;
+            return (
+              <li key={tab.id}>
+                <button
+                  className="w-full flex items-center gap-3 text-left group"
+                  style={{
+                    padding: "9px 16px",
+                    background: selected ? "rgba(245,200,66,0.08)" : "transparent",
+                    borderLeft: selected ? "2px solid rgba(245,200,66,0.6)" : "2px solid transparent",
+                    transition: "background 0.1s, border-color 0.1s",
+                    cursor: "pointer",
+                    border: "none",
+                    width: "100%",
+                    borderLeft: selected ? "2px solid rgba(245,200,66,0.55)" : "2px solid transparent",
+                  }}
+                  onMouseEnter={() => setSelectedIndex(i)}
+                  onClick={() => switchToTab(tab)}
+                >
+                  <FaviconOrFallback tab={tab} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: "13px",
+                      color: selected ? "#f0e6b8" : "#c8d8ec",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      lineHeight: "1.4",
+                    }}>
+                      {tab.title}
+                    </div>
+                    <div style={{
+                      fontSize: "11px",
+                      color: "#2e4a66",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      lineHeight: "1.4",
+                      marginTop: "1px",
+                    }}>
+                      {getDomain(tab.url)}
+                    </div>
+                  </div>
+                  {tab.active && (
+                    <span style={{
+                      fontSize: "10px",
+                      color: "#f5c842",
+                      fontWeight: 500,
+                      flexShrink: 0,
+                      letterSpacing: "0.04em",
+                      opacity: 0.8,
+                    }}>
+                      NOW
+                    </span>
+                  )}
+                  <button
+                    style={{
+                      opacity: 0,
+                      padding: "3px",
+                      borderRadius: "4px",
+                      background: "transparent",
+                      border: "none",
+                      color: "#4e6a8a",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                      transition: "opacity 0.1s, color 0.1s",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    className="group-hover:!opacity-100 hover:!text-[#f5c842]"
+                    onClick={(e) => closeTab(tab, e)}
+                    title="Close tab"
+                  >
+                    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Footer */}
-        <div className="flex items-center gap-4 px-4 py-2 border-t border-white/5">
-          <span className="text-xs text-slate-600">
+        <div className="flex items-center px-4 py-2" style={{ borderTop: "1px solid rgba(245,200,66,0.07)" }}>
+          <span style={{ fontSize: "11px", color: "#2e4a66" }}>
             {filtered.length} {filtered.length === 1 ? "tab" : "tabs"}
           </span>
-          <div className="ml-auto flex items-center gap-3 text-xs text-slate-600">
-            <span><kbd className="font-mono">↑↓</kbd> navigate</span>
-            <span><kbd className="font-mono">↵</kbd> switch</span>
-            <span><kbd className="font-mono">esc</kbd> close</span>
+          <div style={{ marginLeft: "auto", display: "flex", gap: "14px", fontSize: "11px", color: "#2e4a66", fontFamily: "monospace" }}>
+            <span>↑↓ navigate</span>
+            <span>↵ switch</span>
+            <span>esc close</span>
           </div>
         </div>
       </div>
