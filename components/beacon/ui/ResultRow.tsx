@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { colors } from "./theme";
+import { colors } from "../lib/theme";
 
 interface ResultRowProps {
   selected: boolean;

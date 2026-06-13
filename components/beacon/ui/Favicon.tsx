@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Tab } from "./types";
-import { GlobeIcon } from "./icons";
+import type { Tab } from "../lib/types";
+import { GlobeIcon } from "../lib/icons";
 
 // A tab's favicon, falling back to a small beacon-amber globe when the icon is
 // missing, broken, or a chrome:// internal URL.

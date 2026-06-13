@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { BeaconCommand } from "./beacon/types";
-import { COMMANDS } from "./beacon/commands";
-import { tabsApi } from "./beacon/messaging";
-import { matchesTab } from "./beacon/utils";
-import { colors } from "./beacon/theme";
-import { BeaconLogo } from "./beacon/icons";
-import { TabRow } from "./beacon/TabRow";
-import { CommandRow } from "./beacon/CommandRow";
-import { EmptyState } from "./beacon/EmptyState";
+import type { BeaconCommand } from "./beacon/lib/types";
+import { COMMANDS } from "./beacon/lib/commands";
+import { tabsApi } from "./beacon/lib/messaging";
+import { matchesTab } from "./beacon/lib/utils";
+import { colors } from "./beacon/lib/theme";
+import { BeaconLogo } from "./beacon/lib/icons";
+import { TabRow } from "./beacon/ui/TabRow";
+import { CommandRow } from "./beacon/ui/CommandRow";
+import { EmptyState } from "./beacon/ui/EmptyState";
 import { useTabs } from "./beacon/useTabs";
 import { useDraggable } from "./beacon/useDraggable";
 

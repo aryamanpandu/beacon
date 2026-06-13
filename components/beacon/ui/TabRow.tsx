@@ -1,10 +1,10 @@
 import type { MouseEvent } from "react";
-import type { Tab } from "./types";
+import type { Tab } from "../lib/types";
 import { ResultRow } from "./ResultRow";
 import { Favicon } from "./Favicon";
-import { CloseIcon } from "./icons";
-import { getDomain } from "./utils";
-import { colors } from "./theme";
+import { CloseIcon } from "../lib/icons";
+import { getDomain } from "../lib/utils";
+import { colors } from "../lib/theme";
 
 interface TabRowProps {
   tab: Tab;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Tab } from "./types";
-import { tabsApi } from "./messaging";
-import { sortTabsFocusedLast } from "./utils";
+import type { Tab } from "./lib/types";
+import { tabsApi } from "./lib/messaging";
+import { sortTabsFocusedLast } from "./lib/utils";
 
 // Fetches the open tabs once on mount and derives window metadata. Filtering by
 // the search query stays in the component since it depends on input state.

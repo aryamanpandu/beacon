@@ -1,6 +1,6 @@
-import type { BeaconCommand } from "./types";
+import type { BeaconCommand } from "../lib/types";
 import { ResultRow } from "./ResultRow";
-import { colors } from "./theme";
+import { colors } from "../lib/theme";
 
 interface CommandRowProps {
   command: BeaconCommand;
