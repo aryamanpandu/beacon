@@ -9,7 +9,7 @@ export default defineConfig({
     name: "Beacon",
     description: "Keyboard-driven tab search. Hit Cmd+E, type, switch.",
     version: "1.0.0",
-    permissions: ["tabs"],
+    permissions: ["tabs", "bookmarks"],
     browser_specific_settings: {
       gecko: {
         id: "beacon@aryamanpandu",
