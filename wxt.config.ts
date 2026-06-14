@@ -13,7 +13,13 @@ export default defineConfig({
     browser_specific_settings: {
       gecko: {
         id: "beacon@aryamanpandu",
-        strict_min_version: "109.0",
+        strict_min_version: "142.0",
+        data_collection_permissions: {
+          required: [
+            "bookmarksInfo",
+            "browsingActivity",
+          ]
+        }
       },
     },
     icons: {
@@ -31,5 +37,8 @@ export default defineConfig({
         description: "Open Beacon tab search",
       },
     },
+    content_security_policy: {
+      extension_pages: "script-src 'self'; object-src 'self';", 
+    }
   },
 });
