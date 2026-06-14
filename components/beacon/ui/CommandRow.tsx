@@ -22,7 +22,7 @@ export function CommandRow({ command, selected, onSelect, onHover }: CommandRowP
         subtitle={command.description}
         trailing={
           <kbd style={{ fontSize: "10px", color: colors.textMuted, fontFamily: "monospace", flexShrink: 0 }}>
-            ↵
+            {command.url ? "↗" : "↵"}
           </kbd>
         }
       />

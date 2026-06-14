@@ -1,9 +1,10 @@
 import type { BeaconCommand } from "./types";
-import { BookmarkIcon, HistoryIcon } from "./icons";
+import { BookmarkIcon, HistoryIcon, CoffeeIcon } from "./icons";
 
-// Type "/" in the search to bring these up. The actual bookmark/history search
-// logic is NOT implemented yet — selecting a command just enters its mode and
-// shows a placeholder. Wiring up the data sources comes later.
+const SUPPORT_URL = "https://buymeacoffee.com/aryamanpandey";
+
+// Type "/" in the search to bring these up. Search commands (book, hist) enter a
+// filterable mode; action commands (those with a `url`) open a link and close.
 export const COMMANDS: BeaconCommand[] = [
   {
     id: "book",
@@ -20,5 +21,14 @@ export const COMMANDS: BeaconCommand[] = [
     description: "Search your browsing history",
     placeholder: "Search history…",
     icon: HistoryIcon,
+  },
+  {
+    id: "coffee",
+    trigger: "/coffee",
+    label: "Buy me a coffee",
+    description: "Support Beacon's development",
+    placeholder: "",
+    icon: CoffeeIcon,
+    url: SUPPORT_URL,
   },
 ];

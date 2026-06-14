@@ -23,4 +23,7 @@ export interface BeaconCommand {
   description: string; // shown in the autocomplete row
   placeholder: string; // input placeholder once the mode is active
   icon: ReactNode;
+  // Action commands: if set, selecting the command opens this URL and closes
+  // Beacon, instead of entering a search mode.
+  url?: string;
 }

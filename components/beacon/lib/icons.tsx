@@ -27,6 +27,14 @@ export const HistoryIcon = (
   </svg>
 );
 
+export const CoffeeIcon = (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="1.8">
+    <path d="M4 8h13v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8z" strokeLinejoin="round" />
+    <path d="M17 9h2a2.5 2.5 0 0 1 0 5h-2" />
+    <path d="M7 2.5c-.5 1 .5 1.5 0 2.5M11 2.5c-.5 1 .5 1.5 0 2.5" strokeLinecap="round" />
+  </svg>
+);
+
 export function GlobeIcon() {
   return (
     <svg className="w-2.5 h-2.5" fill="none" stroke={colors.accent} strokeWidth={2} viewBox="0 0 24 24">
