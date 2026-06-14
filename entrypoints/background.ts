@@ -61,6 +61,19 @@ export default defineBackground(() => {
       return true;
     }
 
+    if (message.type === "GET_HISTORY") {
+      // Pull the most recently visited pages across all time (default window is
+      // only the last 24h, so startTime: 0). De-duped by URL by the API.
+      browser.history.search({ text: "", maxResults: 2000, startTime: 0 }).then((items) => {
+        const history = items
+          .filter((it) => it.url)
+          .sort((a, b) => (b.lastVisitTime ?? 0) - (a.lastVisitTime ?? 0))
+          .map((it) => ({ id: it.id, title: it.title || it.url!, url: it.url! }));
+        sendResponse({ history });
+      });
+      return true;
+    }
+
     if (message.type === "OPEN_URL") {
       browser.tabs.create({ url: message.url });
       return false;
