@@ -24,3 +24,14 @@ export function matchesTab(tab: Tab, query: string): boolean {
     getDomain(tab.url).toLowerCase().includes(query)
   );
 }
+
+// Client-side substring filter for bookmark/history lists (matches title or URL)
+export function filterLinks<T extends { title: string; url: string }>(
+  items: T[] | null,
+  query: string
+): T[] {
+  if (!items) return [];
+  const q = query.trim().toLowerCase();
+  if (!q) return items;
+  return items.filter((i) => i.title.toLowerCase().includes(q) || i.url.toLowerCase().includes(q));
+}
