@@ -1,4 +1,4 @@
-import type { Bookmark, Tab } from "./types";
+import type { LinkItem, Tab } from "./types";
 
 export interface GetTabsResponse {
   tabs: Tab[];
@@ -17,7 +17,14 @@ export const tabsApi = {
 
 export const bookmarksApi = {
   getAll: async () => {
-    const res = (await browser.runtime.sendMessage({ type: "GET_BOOKMARKS" })) as { bookmarks: Bookmark[] };
+    const res = (await browser.runtime.sendMessage({ type: "GET_BOOKMARKS" })) as { bookmarks: LinkItem[] };
     return res.bookmarks;
+  },
+};
+
+export const historyApi = {
+  getAll: async () => {
+    const res = (await browser.runtime.sendMessage({ type: "GET_HISTORY" })) as { history: LinkItem[] };
+    return res.history;
   },
 };
