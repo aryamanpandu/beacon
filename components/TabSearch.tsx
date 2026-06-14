@@ -113,6 +113,16 @@ export default function TabSearch({ onClose }: TabSearchProps) {
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
+  // Picking a command from the palette: action commands (with a url) open it and
+  // close; everything else enters its search mode.
+  const selectCommand = useCallback(
+    (cmd: BeaconCommand) => {
+      if (cmd.url) openLink(cmd.url);
+      else enterCommand(cmd);
+    },
+    [openLink, enterCommand]
+  );
+
   // Mode-aware dismiss: back out of a command first, otherwise close Beacon
   const dismiss = useCallback(() => {
     if (activeCommand) {
@@ -156,14 +166,14 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           // In the palette, Tab autocompletes / selects the highlighted command
           if (inCommandPalette && commandResults[selectedIndex]) {
             e.preventDefault();
-            enterCommand(commandResults[selectedIndex]);
+            selectCommand(commandResults[selectedIndex]);
           }
           break;
         case "Enter":
           e.preventDefault();
           if (inCommandPalette) {
             const cmd = commandResults[selectedIndex];
-            if (cmd) enterCommand(cmd);
+            if (cmd) selectCommand(cmd);
           } else if (linkMode) {
             const item = filteredLinks[selectedIndex];
             if (item) openLink(item.url);
@@ -182,7 +192,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           break;
       }
     },
-    [navLength, inCommandPalette, commandResults, linkMode, filteredLinks, openLink, activeCommand, query, selectedIndex, filteredTabs, switchToTab, enterCommand, dismiss]
+    [navLength, inCommandPalette, commandResults, linkMode, filteredLinks, openLink, activeCommand, query, selectedIndex, filteredTabs, switchToTab, selectCommand, dismiss]
   );
 
   const placeholder = activeCommand ? activeCommand.placeholder : "Search tabs, or type / for commands";
@@ -304,7 +314,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
                   key={cmd.id}
                   command={cmd}
                   selected={i === selectedIndex}
-                  onSelect={() => enterCommand(cmd)}
+                  onSelect={() => selectCommand(cmd)}
                   onHover={() => setSelectedIndex(i)}
                 />
               ))
