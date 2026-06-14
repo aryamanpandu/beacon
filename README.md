@@ -10,6 +10,8 @@ Like a lighthouse cutting through a storm: one amber light, and you know exactly
 Cmd + . (period)   →   type   →   ↵
 ```
 
+**[Try the interactive demo at trybeacon.tech](https://www.trybeacon.tech/)**
+
 ---
 
 ## Features
