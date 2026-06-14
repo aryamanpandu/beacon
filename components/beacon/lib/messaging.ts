@@ -1,4 +1,4 @@
-import type { Tab } from "./types";
+import type { Bookmark, Tab } from "./types";
 
 export interface GetTabsResponse {
   tabs: Tab[];
@@ -12,4 +12,12 @@ export const tabsApi = {
   switchTo: (tabId: number, windowId: number) =>
     browser.runtime.sendMessage({ type: "SWITCH_TAB", tabId, windowId }),
   close: (tabId: number) => browser.runtime.sendMessage({ type: "CLOSE_TAB", tabId }),
+  openUrl: (url: string) => browser.runtime.sendMessage({ type: "OPEN_URL", url }),
+};
+
+export const bookmarksApi = {
+  getAll: async () => {
+    const res = (await browser.runtime.sendMessage({ type: "GET_BOOKMARKS" })) as { bookmarks: Bookmark[] };
+    return res.bookmarks;
+  },
 };
