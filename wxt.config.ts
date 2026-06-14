@@ -8,7 +8,7 @@ export default defineConfig({
   manifest: {
     name: "Beacon",
     description: "Keyboard-driven tab search. Hit Cmd+. (period) , type, switch.",
-    version: "1.0.0",
+    version: "1.0.1",
     permissions: ["tabs", "bookmarks", "history"],
     browser_specific_settings: {
       gecko: {
