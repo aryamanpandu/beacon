@@ -42,5 +42,41 @@ export default defineBackground(() => {
       browser.tabs.remove(message.tabId);
       return false;
     }
+
+    if (message.type === "GET_BOOKMARKS") {
+      // The browser already keeps bookmarks in memory
+      // no caching needed. Flatten the tree to the leaf nodes that have a URL.
+      browser.bookmarks.getTree().then((tree) => {
+        const bookmarks: { id: string; title: string; url: string }[] = [];
+        const stack = [...tree];
+        while (stack.length) {
+          const node = stack.pop()!;
+          if (node.url) {
+            bookmarks.push({ id: node.id, title: node.title || node.url, url: node.url });
+          }
+          if (node.children) stack.push(...node.children);
+        }
+        sendResponse({ bookmarks });
+      });
+      return true;
+    }
+
+    if (message.type === "GET_HISTORY") {
+      // Pull the most recently visited pages across all time (default window is
+      // only the last 24h, so startTime: 0). De-duped by URL by the API.
+      browser.history.search({ text: "", maxResults: 2000, startTime: 0 }).then((items) => {
+        const history = items
+          .filter((it) => it.url)
+          .sort((a, b) => (b.lastVisitTime ?? 0) - (a.lastVisitTime ?? 0))
+          .map((it) => ({ id: it.id, title: it.title || it.url!, url: it.url! }));
+        sendResponse({ history });
+      });
+      return true;
+    }
+
+    if (message.type === "OPEN_URL") {
+      browser.tabs.create({ url: message.url });
+      return false;
+    }
   });
 });
