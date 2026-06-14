@@ -101,13 +101,9 @@ npm run dev:firefox  # Firefox
 
 ## Make it yours
 
-A couple of one-line tweaks:
+**Add a command** — drop another entry in the `COMMANDS` array in [`components/beacon/lib/commands.tsx`](components/beacon/lib/commands.tsx). A `url` makes it an *action* command (opens a link and closes); leave it off to make a *mode* command (enters a sub-search like `/book`).
 
-- **Support link** — point `/coffee` wherever you like in [`components/beacon/lib/commands.tsx`](components/beacon/lib/commands.tsx):
-  ```ts
-  const SUPPORT_URL = "https://buymeacoffee.com/your-username";
-  ```
-- **Add a command** — drop another entry in the `COMMANDS` array. A `url` makes it an *action* command (opens a link and closes); leave it off to make a *mode* command (enters a sub-search like `/book`).
+> Please leave the `/coffee` support link as-is. Beacon is free and open - if you fork or share it, keeping the original `/coffee` link is the one thing asked in return. 🙏
 
 ---
 
@@ -129,9 +125,3 @@ The overlay is injected as a content script inside a shadow root, so the host pa
 If Beacon saves you from tab-chaos and you'd like to say thanks:
 
 ☕ [Buy me a coffee](https://buymeacoffee.com/aryamanpandey)
-
----
-
-## License
-
-Open source. No `LICENSE` file yet — adding one (MIT is a common, permissive choice) makes the terms explicit for anyone who wants to use or contribute.
