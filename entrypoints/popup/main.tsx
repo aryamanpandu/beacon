@@ -49,10 +49,14 @@ function Popup() {
   const isFirefox = import.meta.env.BROWSER === "firefox";
 
   const openShortcuts = () => {
-    // Firefox has no deep link to its shortcut manager and blocks navigating to
-    // chrome:// pages — open about:addons (the closest entry point) instead.
-    const url = isFirefox ? "about:addons" : "chrome://extensions/shortcuts";
-    browser.tabs.create({ url }).catch(() => {});
+    if (isFirefox) {
+      // Firefox blocks tabs.create for about: pages. The only reliable way to
+      // get the user to the shortcut manager is to open about:addons via the
+      // native API — which isn't exposed — so we navigate the current tab there.
+      browser.tabs.update({ url: "about:addons" }).catch(() => {});
+    } else {
+      browser.tabs.create({ url: "chrome://extensions/shortcuts" }).catch(() => {});
+    }
     window.close();
   };
 
