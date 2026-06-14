@@ -8,7 +8,7 @@ export function getDomain(url: string): string {
   }
 }
 
-// You're usually hunting for a tab you can't see — sink the focused window's
+// You're usually hunting for a tab you can't see - sink the focused window's
 // tabs to the bottom so the rest surface first.
 export function sortTabsFocusedLast(tabs: Tab[], focusedWindowId: number | null): Tab[] {
   return [...tabs].sort((a, b) => {

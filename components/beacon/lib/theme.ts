@@ -1,4 +1,4 @@
-// Shared color tokens for the Beacon overlay — the deep storm-navy + amber beam.
+// Shared color tokens for the Beacon overlay - the deep storm-navy + amber beam.
 export const colors = {
   accent: "#f5c842",
   accentSoftBg: "rgba(245,200,66,0.07)",

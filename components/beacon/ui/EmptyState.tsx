@@ -1,6 +1,6 @@
 import { colors } from "../lib/theme";
 
-// Centered placeholder row — used for "no results" states and the not-yet-built
+// Centered placeholder row - used for "no results" states and the not-yet-built
 // command stub. As a direct <li> it stays consistent with keyboard scroll logic.
 export function EmptyState({ title, subtitle }: { title: string; subtitle?: string }) {
   return (

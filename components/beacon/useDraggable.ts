@@ -41,7 +41,7 @@ export function useDraggable(initial: Point, onDragEnd?: () => void) {
       onDragEndRef.current?.();
     };
 
-    // passive: true — browser doesn't wait for JS before painting the next frame
+    // passive: true - browser doesn't wait for JS before painting the next frame
     document.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseup", onMouseUp);
     return () => {

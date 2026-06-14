@@ -11,7 +11,7 @@ interface LinkRowProps {
   onHover: () => void;
 }
 
-// A single openable link — used for both bookmark and history results. The icon
+// A single openable link - used for both bookmark and history results. The icon
 // (bookmark ribbon vs history clock) is passed in by the caller.
 export function LinkRow({ title, url, icon, selected, onSelect, onHover }: LinkRowProps) {
   return (

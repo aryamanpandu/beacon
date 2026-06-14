@@ -9,7 +9,7 @@ export interface Tab {
   active: boolean;
 }
 
-// A bookmark or history entry — both are just openable links of the same shape.
+// A bookmark or history entry - both are just openable links of the same shape.
 export interface LinkItem {
   id: string;
   title: string;

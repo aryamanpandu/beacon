@@ -35,7 +35,7 @@ export function TabRow({
           style={{
             fontSize: "10px",
             // Current window recedes (its tabs are sorted last); other windows
-            // read more clearly — that's where you're looking.
+            // read more clearly - that's where you're looking.
             color: isFocusedWindow ? colors.textFaint : colors.textMuted,
             fontWeight: 500,
             flexShrink: 0,

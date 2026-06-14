@@ -135,7 +135,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
 
   // Fallback Escape handler for when the input isn't focused (e.g. mid-drag).
   // When the input IS focused, its own onKeyDown handles Escape and stops the
-  // event before it reaches here — so this never double-fires.
+  // event before it reaches here - so this never double-fires.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") dismiss();
@@ -146,7 +146,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Keep keystrokes inside Beacon — otherwise page-level shortcuts (e.g.
+      // Keep keystrokes inside Beacon - otherwise page-level shortcuts (e.g.
       // Google's "/" to focus its search box) steal the key while we're typing.
       e.stopPropagation();
       switch (e.key) {
@@ -212,7 +212,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           top: 0,
           left: 0,
           width: "576px",
-          // transform set imperatively by useDraggable — not driven by React state
+          // transform set imperatively by useDraggable - not driven by React state
           willChange: "transform",
           background: "linear-gradient(160deg, #060e1c 0%, #030810 100%)",
           border: "1px solid rgba(245,200,66,0.18)",
@@ -222,7 +222,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
         }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {/* Header — also the drag handle */}
+        {/* Header - also the drag handle */}
         <div
           className="flex items-center gap-3 px-4 py-3"
           style={{ borderBottom: "1px solid rgba(245,200,66,0.10)", cursor: "grab" }}
@@ -292,7 +292,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           </kbd>
         </div>
 
-        {/* Results — pointer-events disabled while dragging to avoid hover recalcs */}
+        {/* Results - pointer-events disabled while dragging to avoid hover recalcs */}
         <ul
           ref={listRef}
           className="overflow-y-auto"
@@ -344,7 +344,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           {activeCommand && !linkMode && (
             <EmptyState
               title={`${activeCommand.label} search isn’t wired up yet`}
-              subtitle="Coming soon — press esc to go back to tabs"
+              subtitle="Coming soon - press esc to go back to tabs"
             />
           )}
 

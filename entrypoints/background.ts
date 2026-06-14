@@ -1,6 +1,6 @@
 export default defineBackground(() => {
   // When the command shortcut is triggered, tell the active tab to open the overlay.
-  // Won't work on restricted pages (chrome://, New Tab, Web Store) — that's expected.
+  // Won't work on restricted pages (chrome://, New Tab, Web Store) - that's expected.
   browser.commands.onCommand.addListener(async (command) => {
     if (command !== "open-tab-search") return;
 

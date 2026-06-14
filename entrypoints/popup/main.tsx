@@ -52,7 +52,7 @@ function Popup() {
     if (isFirefox) {
       // Firefox blocks tabs.create for about: pages. The only reliable way to
       // get the user to the shortcut manager is to open about:addons via the
-      // native API — which isn't exposed — so we navigate the current tab there.
+      // native API - which isn't exposed - so we navigate the current tab there.
       browser.tabs.update({ url: "about:addons" }).catch(() => {});
     } else {
       browser.tabs.create({ url: "chrome://extensions/shortcuts" }).catch(() => {});
