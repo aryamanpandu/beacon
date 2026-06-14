@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { BeaconCommand } from "./beacon/lib/types";
 import { COMMANDS } from "./beacon/lib/commands";
-import { tabsApi } from "./beacon/lib/messaging";
-import { matchesTab } from "./beacon/lib/utils";
+import { tabsApi, bookmarksApi, historyApi } from "./beacon/lib/messaging";
+import { matchesTab, filterLinks } from "./beacon/lib/utils";
 import { colors } from "./beacon/lib/theme";
-import { BeaconLogo } from "./beacon/lib/icons";
+import { BeaconLogo, BookmarkIcon, HistoryIcon } from "./beacon/lib/icons";
 import { TabRow } from "./beacon/ui/TabRow";
 import { CommandRow } from "./beacon/ui/CommandRow";
-import { BookmarkRow } from "./beacon/ui/BookmarkRow";
+import { LinkRow } from "./beacon/ui/LinkRow";
 import { EmptyState } from "./beacon/ui/EmptyState";
 import { useTabs } from "./beacon/useTabs";
-import { useBookmarks } from "./beacon/useBookmarks";
+import { useLazyList } from "./beacon/useLazyList";
 import { useDraggable } from "./beacon/useDraggable";
 
 interface TabSearchProps {
@@ -44,22 +44,26 @@ export default function TabSearch({ onClose }: TabSearchProps) {
     return !q ? tabs : tabs.filter((t) => matchesTab(t, q));
   }, [query, tabs]);
 
-  // Bookmark mode: lazily load on entering /book, then filter client-side
+  // Bookmark / history modes: lazily load on entry, then filter client-side.
+  // Both render identically (a filterable list of openable links), so they share
+  // one path that only differs by data source, icon, and labels.
   const inBookmarkMode = activeCommand?.id === "book";
-  const bookmarks = useBookmarks(inBookmarkMode);
-  const filteredBookmarks = useMemo(() => {
-    if (!bookmarks) return [];
-    const q = query.trim().toLowerCase();
-    return !q
-      ? bookmarks
-      : bookmarks.filter((b) => b.title.toLowerCase().includes(q) || b.url.toLowerCase().includes(q));
-  }, [bookmarks, query]);
+  const inHistoryMode = activeCommand?.id === "hist";
+  const bookmarks = useLazyList(inBookmarkMode, bookmarksApi.getAll);
+  const history = useLazyList(inHistoryMode, historyApi.getAll);
+
+  const linkMode = inBookmarkMode
+    ? { raw: bookmarks, icon: BookmarkIcon, noun: "bookmark", loading: "Loading bookmarks…", empty: "No bookmarks found" }
+    : inHistoryMode
+    ? { raw: history, icon: HistoryIcon, noun: "result", loading: "Loading history…", empty: "No history found" }
+    : null;
+  const filteredLinks = useMemo(() => filterLinks(linkMode?.raw ?? null, query), [linkMode?.raw, query]);
 
   // How many selectable rows the arrow keys move through, given the current mode
   const navLength = inCommandPalette
     ? commandResults.length
-    : inBookmarkMode
-    ? filteredBookmarks.length
+    : linkMode
+    ? filteredLinks.length
     : activeCommand
     ? 0
     : filteredTabs.length;
@@ -95,7 +99,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
     [removeTab]
   );
 
-  const openBookmark = useCallback(
+  const openLink = useCallback(
     (url: string) => {
       tabsApi.openUrl(url);
       onClose();
@@ -160,11 +164,11 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           if (inCommandPalette) {
             const cmd = commandResults[selectedIndex];
             if (cmd) enterCommand(cmd);
-          } else if (inBookmarkMode) {
-            const bookmark = filteredBookmarks[selectedIndex];
-            if (bookmark) openBookmark(bookmark.url);
+          } else if (linkMode) {
+            const item = filteredLinks[selectedIndex];
+            if (item) openLink(item.url);
           } else if (activeCommand) {
-            // /hist — not implemented yet
+            // command with no implemented results yet
           } else if (filteredTabs[selectedIndex]) {
             switchToTab(filteredTabs[selectedIndex]);
           }
@@ -178,7 +182,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           break;
       }
     },
-    [navLength, inCommandPalette, commandResults, inBookmarkMode, filteredBookmarks, openBookmark, activeCommand, query, selectedIndex, filteredTabs, switchToTab, enterCommand, dismiss]
+    [navLength, inCommandPalette, commandResults, linkMode, filteredLinks, openLink, activeCommand, query, selectedIndex, filteredTabs, switchToTab, enterCommand, dismiss]
   );
 
   const placeholder = activeCommand ? activeCommand.placeholder : "Search tabs, or type / for commands";
@@ -306,26 +310,28 @@ export default function TabSearch({ onClose }: TabSearchProps) {
               ))
             ))}
 
-          {/* Mode 2a: bookmark search */}
-          {inBookmarkMode &&
-            (bookmarks === null ? (
-              <EmptyState title="Loading bookmarks…" />
-            ) : filteredBookmarks.length === 0 ? (
-              <EmptyState title="No bookmarks found" />
+          {/* Mode 2a: bookmark / history search (shared link list) */}
+          {linkMode &&
+            (linkMode.raw === null ? (
+              <EmptyState title={linkMode.loading} />
+            ) : filteredLinks.length === 0 ? (
+              <EmptyState title={linkMode.empty} />
             ) : (
-              filteredBookmarks.map((bookmark, i) => (
-                <BookmarkRow
-                  key={bookmark.id}
-                  bookmark={bookmark}
+              filteredLinks.map((item, i) => (
+                <LinkRow
+                  key={item.id}
+                  title={item.title}
+                  url={item.url}
+                  icon={linkMode.icon}
                   selected={i === selectedIndex}
-                  onSelect={() => openBookmark(bookmark.url)}
+                  onSelect={() => openLink(item.url)}
                   onHover={() => setSelectedIndex(i)}
                 />
               ))
             ))}
 
-          {/* Mode 2b: other commands not built yet (stub) */}
-          {activeCommand && !inBookmarkMode && (
+          {/* Mode 2b: a command with no implemented results yet (stub) */}
+          {activeCommand && !linkMode && (
             <EmptyState
               title={`${activeCommand.label} search isn’t wired up yet`}
               subtitle="Coming soon — press esc to go back to tabs"
@@ -359,8 +365,8 @@ export default function TabSearch({ onClose }: TabSearchProps) {
           <span style={{ fontSize: "11px", color: colors.textFaint }}>
             {inCommandPalette
               ? "Commands"
-              : inBookmarkMode
-              ? `${filteredBookmarks.length} ${filteredBookmarks.length === 1 ? "bookmark" : "bookmarks"}`
+              : linkMode
+              ? `${filteredLinks.length} ${filteredLinks.length === 1 ? linkMode.noun : `${linkMode.noun}s`}`
               : activeCommand
               ? activeCommand.label
               : `${filteredTabs.length} ${filteredTabs.length === 1 ? "tab" : "tabs"}`}
@@ -381,7 +387,7 @@ export default function TabSearch({ onClose }: TabSearchProps) {
                 <span>↵ select</span>
                 <span>esc close</span>
               </>
-            ) : inBookmarkMode ? (
+            ) : linkMode ? (
               <>
                 <span>↑↓ navigate</span>
                 <span>↵ open</span>
