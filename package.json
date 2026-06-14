@@ -1,6 +1,6 @@
 {
   "name": "beacon",
-  "description": "A minimal browser extension that gives you a keyboard-driven tab switcher. Press Cmd+E to instantly search and jump to any open tab - no mouse required",
+  "description": "A minimal browser extension that gives you a keyboard-driven tab switcher. Press Cmd+. (period) to instantly search and jump to any open tab - no mouse required",
   "version": "1.0.0",
   "type": "module",
   "scripts": {

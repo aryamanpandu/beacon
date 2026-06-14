@@ -7,7 +7,7 @@ export default defineConfig({
   }),
   manifest: {
     name: "Beacon",
-    description: "Keyboard-driven tab search. Hit Cmd+E, type, switch.",
+    description: "Keyboard-driven tab search. Hit Cmd+. (period) , type, switch.",
     version: "1.0.0",
     permissions: ["tabs", "bookmarks", "history"],
     browser_specific_settings: {
@@ -31,8 +31,8 @@ export default defineConfig({
     commands: {
       "open-tab-search": {
         suggested_key: {
-          mac: "Command+E",
-          default: "Ctrl+E",
+          mac: "Command+Period",
+          default: "Ctrl+Period",
         },
         description: "Open Beacon tab search",
       },

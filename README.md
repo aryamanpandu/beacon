@@ -7,7 +7,7 @@ Beacon is a keyboard-driven search overlay for Chrome and Firefox. Hit one short
 Like a lighthouse cutting through a storm: one amber light, and you know exactly where to go.
 
 ```
-Cmd + E   →   type   →   ↵
+Cmd + . (period)   →   type   →   ↵
 ```
 
 ---
@@ -30,8 +30,8 @@ Cmd + E   →   type   →   ↵
 
 | Platform | Default |
 | --- | --- |
-| macOS | `Cmd + E` |
-| Windows / Linux | `Ctrl + E` |
+| macOS | `Cmd + .` |
+| Windows / Linux | `Ctrl + .` |
 
 Want a different combo? Click the Beacon toolbar icon → **Customize shortcut**, or set it directly:
 
@@ -71,7 +71,7 @@ Then:
 2. Toggle **Developer mode** on (top-right)
 3. Click **Load unpacked**
 4. Select the **`.output/chrome-mv3`** folder
-5. Press `Cmd/Ctrl + E` on any normal web page
+5. Press `Cmd/Ctrl + .` on any normal web page
 
 ### 2b. Load it in Firefox
 
@@ -84,7 +84,7 @@ Then:
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click **Load Temporary Add-on…**
 3. Select any file inside **`.output/firefox-mv2`** (e.g. `manifest.json`)
-4. Press `Cmd/Ctrl + E`
+4. Press `Cmd/Ctrl + .`
 
 > Temporary add-ons are removed when Firefox restarts. To keep it permanently you'd need to sign it through [addons.mozilla.org](https://addons.mozilla.org) — the add-on ID is already set up for that.
 
